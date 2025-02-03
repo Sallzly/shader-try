@@ -1,0 +1,42 @@
+[gd_resource type="Shader" format=3 uid="uid://yo8s57ocp7le"]
+
+[resource]
+code = "
+// NOTE: Shader automatically converted from Godot Engine 4.3.stable.mono's FogMaterial.
+
+shader_type fog;
+
+uniform float density : hint_range(0, 1, 0.0001) = 1.0;
+uniform vec4 albedo : source_color = vec4(1.0);
+uniform vec4 emission : source_color = vec4(0, 0, 0, 1);
+uniform float height_falloff = 1.5;
+uniform float edge_fade = 1.2;
+uniform sampler3D density_texture: hint_default_white;
+
+
+
+void fog() {
+    DENSITY = density * clamp(exp2(-height_falloff * (WORLD_POSITION.y - OBJECT_POSITION.y)), 0.0, 1.0);
+    DENSITY *= texture(density_texture, UVW * (sin(TIME) / 1.0 )).b;
+    DENSITY *= pow(clamp(-2.0 * SDF / min(min(SIZE.x, SIZE.y), SIZE.z), 0.0, 1.0), edge_fade);
+
+vec3 lightblue = vec3(0.0, 0.2, 1.0);
+
+vec3 fPos;
+fPos = WORLD_POSITION.xyz * 1.5;
+//making the 4 colours
+vec3 red = vec3(1.0, 0.0, 0.0);
+vec3 blue = vec3(0.0, 0.0, 1.0);
+vec3 green = vec3(0.0, 1.0, 0.0);
+vec3 white = vec3(1.0, 1.0, 1.0);
+//adding time into the mix
+vec3 move1 = mix(blue, white, fract(TIME));
+vec3 movemixed = mix(green, red, fract(TIME) );
+vec3 finalmix = mix(move1, movemixed, fract(TIME));
+
+ALBEDO = finalmix;
+// used this before adding the colour change
+// ALBEDO = lightblue;
+EMISSION = emission.rgb;
+}
+"

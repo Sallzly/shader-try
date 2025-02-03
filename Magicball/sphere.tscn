@@ -1,0 +1,169 @@
+[gd_scene load_steps=35 format=3 uid="uid://cq1neqseb38ju"]
+
+[ext_resource type="Shader" path="res://Magicball/4colourgradient.gdshader" id="1_82cci"]
+[ext_resource type="Shader" path="res://Discoball/grid.gdshader" id="2_sy3vt"]
+[ext_resource type="Texture2D" uid="uid://c1w7coairqdn7" path="res://icon.svg" id="3_orrmx"]
+[ext_resource type="Shader" path="res://Magicball/wallblur.gdshader" id="3_vlgn4"]
+[ext_resource type="Shader" uid="uid://yo8s57ocp7le" path="res://fog.tres" id="4_suabl"]
+[ext_resource type="Script" path="res://Magicball/omni_light_3d.gd" id="5_j6mi8"]
+[ext_resource type="Shader" path="res://Magicball/ripple.gdshader" id="5_jhwa4"]
+[ext_resource type="Shader" path="res://Magicball/shimmer.gdshader" id="7_cysj4"]
+[ext_resource type="Shader" path="res://Magicball/blinklight.gdshader" id="9_4m86r"]
+[ext_resource type="Shader" path="res://Magicball/noise.gdshader" id="9_w44u4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x1uyl"]
+render_priority = 0
+shader = ExtResource("1_82cci")
+
+[sub_resource type="SphereMesh" id="SphereMesh_a37ny"]
+material = SubResource("ShaderMaterial_x1uyl")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x141s"]
+render_priority = 0
+shader = ExtResource("2_sy3vt")
+
+[sub_resource type="SphereMesh" id="SphereMesh_tkw4k"]
+material = SubResource("ShaderMaterial_x141s")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0clc6"]
+render_priority = 0
+shader = ExtResource("3_vlgn4")
+shader_parameter/textureimage = ExtResource("3_orrmx")
+
+[sub_resource type="BoxMesh" id="BoxMesh_ju47n"]
+lightmap_size_hint = Vector2i(14, 20)
+material = SubResource("ShaderMaterial_0clc6")
+flip_faces = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nllos"]
+render_priority = 0
+shader = ExtResource("5_jhwa4")
+shader_parameter/frequency = 6.93
+shader_parameter/amplitude = 2.1
+shader_parameter/ripple_rate = 5.0
+shader_parameter/blending = 1.0
+shader_parameter/wave_amplitude = 0.058
+shader_parameter/wave_frequency = 0.86
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_43jww"]
+resource_local_to_scene = true
+next_pass = SubResource("ShaderMaterial_nllos")
+albedo_texture = ExtResource("3_orrmx")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_i1v28"]
+material = SubResource("StandardMaterial3D_43jww")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oaf50"]
+render_priority = 0
+shader = ExtResource("9_4m86r")
+shader_parameter/blink_speed = 0.912
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7andt"]
+material = SubResource("ShaderMaterial_oaf50")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kacl4"]
+render_priority = 0
+shader = ExtResource("7_cysj4")
+shader_parameter/cycle_interval = 1.0
+shader_parameter/shine_speed = 3.0
+shader_parameter/shine_width = 3.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rfdef"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_kacl4")
+shader = ExtResource("1_82cci")
+
+[sub_resource type="TorusMesh" id="TorusMesh_peumc"]
+material = SubResource("ShaderMaterial_rfdef")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_m20us"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2hnw7"]
+noise = SubResource("FastNoiseLite_m20us")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_vydt8"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_lep1j"]
+as_normal_map = true
+noise = SubResource("FastNoiseLite_vydt8")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xwxuf"]
+render_priority = 0
+shader = ExtResource("9_w44u4")
+shader_parameter/height_scale = 0.46
+shader_parameter/noise = SubResource("NoiseTexture2D_2hnw7")
+shader_parameter/normalmap = SubResource("NoiseTexture2D_lep1j")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1rimf"]
+material = SubResource("ShaderMaterial_xwxuf")
+subdivide_width = 24
+subdivide_depth = 24
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_cisy8"]
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_u46gm"]
+noise = SubResource("FastNoiseLite_cisy8")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pa42l"]
+shader = ExtResource("4_suabl")
+shader_parameter/density = 1.0
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/emission = Color(0, 0, 0, 1)
+shader_parameter/height_falloff = 1.5
+shader_parameter/edge_fade = 1.2
+shader_parameter/density_texture = SubResource("NoiseTexture3D_u46gm")
+
+[sub_resource type="Environment" id="Environment_ephgi"]
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0
+
+[node name="Magic ball" type="MeshInstance3D"]
+transform = Transform3D(-0.881991, -0.459428, 0.104972, 0.0848865, 0.0642241, 0.994319, -0.463559, 0.88589, -0.017646, -0.888453, 0.466858, 0.157526)
+mesh = SubResource("SphereMesh_a37ny")
+
+[node name="Chessboard_Discoball" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.99461, 0.0654677, -0.0804073, -0.0950627, 0.266075, -0.959253, -0.0414058, 0.961727, 0.270865, -1.45162, 0.0294731, 0.121307)
+mesh = SubResource("SphereMesh_tkw4k")
+
+[node name="wall2" type="MeshInstance3D" parent="."]
+transform = Transform3D(6.95632, 0.0020879, 0.663479, -0.048356, 0.29498, -0.0121306, -0.739791, 0.000351474, 6.23954, -0.983377, 2.73163, 1.2411)
+mesh = SubResource("BoxMesh_ju47n")
+
+[node name="wall" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.331175, -0.227638, -0.331679, 1.16583, 0.0114523, -7.65403, 6.79069, 0.00913551, 1.33022, 2.42463, 0.288286, 1.00141)
+mesh = SubResource("BoxMesh_ju47n")
+
+[node name="RippleWall" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.231339, 0.374109, -3.87764, -2.97886, -0.0381233, -0.308214, -0.0541395, 3.69617, 0.389296, -0.658654, 0.133034, -1.61526)
+mesh = SubResource("PlaneMesh_i1v28")
+
+[node name="LightRay" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.412127, -0.575991, -0.156277, 0.269667, 1.10733, 0.225091, 0.0258629, -2.36747, 0.143302, 0.176127, -1.5797, 0.128827)
+mesh = SubResource("CylinderMesh_7andt")
+
+[node name="ScanningDonut" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.999338, -0.0363101, 0.00240182, 0.0363172, 0.999336, -0.00305761, -0.00228929, 0.00314282, 0.999992, -2.14253, 1.04757, -0.386401)
+mesh = SubResource("TorusMesh_peumc")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.721133, 0.125134, -0.681402, -0.691468, 0.0691064, -0.719094, -0.0428935, 0.98973, 0.13636, -2.74701, -1.68474, 0.0304924)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0.00011754, 0.000201096, -0.000118345, 1, -0.000183305, -0.00020099, 0.000183521, 0.999999, -0.982474, 0.484824, -0.661769)
+light_energy = 1.162
+omni_range = 3.38096
+script = ExtResource("5_j6mi8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="OmniLight3D"]
+transform = Transform3D(-0.924001, -0.369603, 0.0980548, -0.052747, 0.377172, 0.92464, -0.378734, 0.849197, -0.368003, 0.716623, -3.19975, 0.383492)
+mesh = SubResource("PlaneMesh_1rimf")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="OmniLight3D/MeshInstance3D"]
+transform = Transform3D(0.999408, 0.00194529, 0.0343575, -0.0023523, 0.999927, 0.0118259, -0.0343323, -0.0118996, 0.99934, -0.276054, 0.484674, 0.268428)
+
+[node name="FogVolume" type="FogVolume" parent="."]
+transform = Transform3D(-4.29837, 0.059014, 0.0871363, 0.180735, 0.0446493, 2.39051, 0.355284, 0.691261, -0.161844, -0.409864, -0.519569, -0.751335)
+material = SubResource("ShaderMaterial_pa42l")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ephgi")
